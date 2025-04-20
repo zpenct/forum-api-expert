@@ -39,6 +39,14 @@ describe('ThreadRepository', () => {
       const threads = await ThreadsTableTestHelper.findById('thread-123');
 
       expect(threads).toHaveLength(1);
+
+      expect(threads[0]).toEqual(expect.objectContaining({
+        id: 'thread-123',
+        title: 'New Thread',
+        body: 'Body New Thread',
+        owner: 'user-0001',
+        created_at: expect.any(Date),
+      }));
     });
 
     it('should return new thread correclty', async () => {

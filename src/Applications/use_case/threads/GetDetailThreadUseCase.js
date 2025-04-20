@@ -20,10 +20,12 @@ class GetDetailsThreadUseCase {
 
     replies = groupReplyByCommentId(replies);
 
+    console.log(replies);
+
     comments = comments.map((comment) => ({
       ...comment
       ,
-      replies: replies[comment.id] ?? [],
+      replies: replies[comment.id] ?? [], 
     }));
 
     return { ...thread, comments };

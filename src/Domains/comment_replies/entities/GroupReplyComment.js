@@ -4,6 +4,7 @@ function groupReplyByCommentId(replies) {
   const result = {};
 
   replies.forEach((reply) => {
+    console.log({reply})
     const formattedReply = new CommentReply({
       ...reply,
       date: reply.created_at,

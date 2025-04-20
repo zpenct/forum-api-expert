@@ -21,6 +21,20 @@ describe('Thread entity', () => {
     );
   });
 
+  it('should throw error when payload.date is not instance of Date', () => {
+    const payload = {
+      id: 'thread-123',
+      date: '2020-01-01',
+      title: 'Title',
+      body: 'Body',
+      username: 'user',
+    };
+  
+    expect(() => new Thread(payload)).toThrowError(
+      'THREAD_DETAILS.PROPERTY_HAVE_WRONG_DATA_TYPE',
+    );
+  });
+
   it('should create Thread entity correctly', () => {
     const payload = {
       id: 'thread-123',

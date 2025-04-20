@@ -41,7 +41,7 @@ describe('Comment entity', () => {
     expect(comment.id).toEqual(payload.id);
     expect(comment.content).toEqual(payload.content);
     expect(comment.username).toEqual(payload.username);
-    expect(comment.isDelete).not.toBeDefined();
+    expect(comment.is_delete).toEqual(payload.is_delete);
     expect(comment.date).toEqual(payload.date);
   });
 

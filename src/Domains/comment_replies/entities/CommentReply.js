@@ -1,4 +1,3 @@
- 
 class CommentReply {
     constructor(payload) {
       this._verifyPayload(payload);
@@ -8,14 +7,15 @@ class CommentReply {
         : payload.content;
       this.username = payload.username;
       this.date = payload.date;
+      this.is_delete = payload.is_delete;
     }
   
     _verifyPayload(payload) {
       const {
-        id, username, content, is_delete: isDelete, date,
+        id, username, content, is_delete, date,
       } = payload;
   
-      if (id == null || username == null || content == null || isDelete == null) {
+      if (id == null || username == null || content == null || is_delete == null) {
         throw new Error('COMMENT_ENTITY.NOT_CONTAIN_NEEDED_PROPERTY');
       }
   
@@ -23,7 +23,7 @@ class CommentReply {
         typeof id !== 'string' ||
         typeof username !== 'string' ||
         typeof content !== 'string' ||
-        typeof isDelete !== 'boolean' ||
+        typeof is_delete !== 'boolean' ||
         (date instanceof Date) === false
       ) {
         throw new Error('COMMENT_ENTITY.PROPERTY_HAVE_WRONG_DATA_TYPE');

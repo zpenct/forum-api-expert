@@ -22,39 +22,44 @@ describe('AddCommentUseCase', () => {
   it('[POSITIVE] should execute the add comment use case as expected', async () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-
+  
     const useCasePayload = {
       content: 'thread',
       owner: 'user',
       threadId: 'thread-001',
     };
-
-    const expectedResult = new NewComment({
-      content: 'thread',
-      owner: 'user',
-      id: 'comment-001',
-    });
-
+  
     mockThreadRepository.verifyThreadIsExist = jest
       .fn()
-      .mockImplementation(() => Promise.resolve());
-
-    mockCommentRepository.addComment = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(expectedResult));
-
+      .mockResolvedValue();
+  
+    mockCommentRepository.addComment = jest.fn().mockResolvedValue(
+      new NewComment({
+        content: 'thread',
+        owner: 'user',
+        id: 'comment-001',
+      })
+    );
+  
     const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
     });
-
+  
     const result = await addCommentUseCase.execute(useCasePayload);
-
-    expect(result).toStrictEqual(expectedResult);
-    expect(mockThreadRepository.verifyThreadIsExist).toBeCalledWith(
-      useCasePayload.threadId,
-    );
-    expect(mockCommentRepository.addComment).toBeCalledWith(useCasePayload);
+  
+    // ✅ Assert field by field to avoid false positive
+    expect(result).toBeInstanceOf(NewComment);
+    expect(result.id).toEqual('comment-001');
+    expect(result.content).toEqual('thread');
+    expect(result.owner).toEqual('user');
+  
+    // ✅ Assert all mocked methods are called correctly
+    expect(mockThreadRepository.verifyThreadIsExist)
+      .toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment)
+      .toBeCalledWith(useCasePayload);
   });
+  
 
 });

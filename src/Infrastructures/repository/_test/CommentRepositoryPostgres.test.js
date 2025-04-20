@@ -121,15 +121,22 @@ describe('CommentRepositoryPostgres', () => {
     it('should not throw error when given valid payload', async () => {
       const idGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, idGenerator);
+      
       const { id } = await commentRepositoryPostgres.addComment({
         content: 'true comment',
         threadId,
         owner: commentedUserId,
       });
+    
+      const spy = jest.spyOn(commentRepositoryPostgres, 'verifyCommentOwner');
+    
       await expect(commentRepositoryPostgres.verifyCommentOwner(id, commentedUserId))
         .resolves
         .not.toThrowError();
+    
+      expect(spy).toBeCalledWith(id, commentedUserId)
     });
+    
   });
 
   describe('deleteCommentById function', () => {
