@@ -6,6 +6,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const CommentRepliesTableTestHelper = require('../../../../tests/CommentRepliesTableTestHelper');
 const NewComment = require('../../../Domains/comments/entities/AddComment');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 describe('ComentReplyRepositoryPostgres', () => {
   const payloadUserJohn = { id: 'user-001', fullname: 'john', username: 'john_user' };
@@ -270,9 +271,14 @@ describe('ComentReplyRepositoryPostgres', () => {
     
       const commentReplyRepositoryPostgres = new CommentReplyRepositoryPostgres(pool);
     
+      // ✅ Assert tidak melempar error spesifik
       await expect(
         commentReplyRepositoryPostgres.verifyReplyCommentOwner(replyPayload.id, replyPayload.owner)
-      ).resolves.not.toThrowError();
+      ).resolves.not.toThrow(NotFoundError);
+    
+      await expect(
+        commentReplyRepositoryPostgres.verifyReplyCommentOwner(replyPayload.id, replyPayload.owner)
+      ).resolves.not.toThrow(AuthorizationError);
     });
     
   });

@@ -69,7 +69,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const { rows } = await this._pool.query(query);
 
-    const mapDBToComment = (comment) => new Comment({ ...comment, date: comment.created_at });
+    const mapDBToComment = (comment) => new Comment({ ...comment });
 
     return rows.map(mapDBToComment);
   }

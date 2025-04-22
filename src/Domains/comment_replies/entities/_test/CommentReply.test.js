@@ -19,7 +19,7 @@ describe('Comment entity', () => {
       content: [],
       username: {},
       is_delete: () => ({}),
-      date: {},
+      created_at: {},
     };
 
     expect(() => new CommentReply(payload)).toThrowError(
@@ -33,7 +33,7 @@ describe('Comment entity', () => {
       content: 'semua benar',
       username: 'user-123',
       is_delete: false,
-      date: new Date(),
+      created_at: new Date(),
     };
 
     const comment = new CommentReply(payload);
@@ -42,7 +42,7 @@ describe('Comment entity', () => {
     expect(comment.content).toEqual(payload.content);
     expect(comment.username).toEqual(payload.username);
     expect(comment.is_delete).toEqual(payload.is_delete);
-    expect(comment.date).toEqual(payload.date);
+    expect(comment.created_at).toEqual(payload.created_at);
   });
 
   it('if is_delete payload is true, content property should give "**komentar telah dihapus**" as a value', () => {
@@ -51,11 +51,78 @@ describe('Comment entity', () => {
       content: 'example comment',
       id: 'comment-123',
       username: 'user-123',
-      date: new Date(),
+      created_at: new Date(),
     };
 
     const comment = new CommentReply(payload);
 
     expect(comment.content).toEqual('**balasan telah dihapus**');
+  });  
+
+  it('should group replies by comment_id correctly', () => {
+    const replies = [
+      {
+        id: 'reply-1',
+        content: 'reply 1',
+        comment_id: 'comment-1',
+        created_at: new Date(),
+        is_delete: false,
+        username: 'userA'
+      },
+      {
+        id: 'reply-2',
+        content: 'reply 2',
+        comment_id: 'comment-1',
+        created_at: new Date(),
+        is_delete: false,
+        username: 'userB'
+      },
+      {
+        id: 'reply-3',
+        content: 'reply 3',
+        comment_id: 'comment-2',
+        created_at: new Date(),
+        is_delete: false,
+        username: 'userC'
+      },
+    ];
+  
+    const result = CommentReply.groupReplyByCommentId(replies);
+  
+    expect(result['comment-1']).toHaveLength(2);
+    expect(result['comment-2']).toHaveLength(1);
+    expect(result['comment-1'][0]).toBeInstanceOf(CommentReply);
+  });
+
+  it('should group replies correctly into their respective comment', () => {
+    const comments = [
+      {
+        id: 'comment-1',
+        content: 'some comment',
+        created_at: new Date(),
+        username: 'userA',
+        is_delete: false,
+      },
+    ];
+
+    const repliesGrouped = {
+      'comment-1': [
+        new CommentReply({
+          id: 'reply-1',
+          content: 'reply content',
+          created_at: new Date(),
+          username: 'userB',
+          is_delete: false,
+        }),
+      ],
+    };
+
+    const result = CommentReply.formatCommentsWithReplies(comments, repliesGrouped);
+
+    expect(result[0].replies).toHaveLength(1);
+    expect(result[0].replies[0]).toBeInstanceOf(CommentReply);
   });
 });
+
+
+
