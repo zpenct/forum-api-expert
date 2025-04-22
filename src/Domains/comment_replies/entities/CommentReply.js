@@ -37,11 +37,16 @@ class CommentReply {
       const result = {};
   
       replies.forEach((reply) => {
-        const formattedReply = new CommentReply({
-          ...reply,
-          created_at: reply.created_at,
-        });
-  
+        const formattedReply = {
+          id: reply.id,
+          content: reply.is_delete
+            ? '**balasan telah dihapus**'
+            : reply.content,
+          username: reply.username,
+          is_delete: reply.is_delete ?? false,
+          date: reply.created_at,
+        }
+       
         if (!result[reply.comment_id]) {
           result[reply.comment_id] = [formattedReply];
         } else {
@@ -53,8 +58,14 @@ class CommentReply {
     }
 
     static formatCommentsWithReplies(comments, repliesGrouped) {
-      return comments.map((comment) => new CommentDetail({
-        ...comment,
+      return comments.map((comment) => ({
+        id: comment.id,
+        username:comment.username,
+        content: comment.is_delete
+          ? '**komentar telah dihapus**'
+          : comment.content,
+        is_delete: comment.is_delete ?? false,
+        date: comment.created_at,
         replies: repliesGrouped[comment.id] ?? [],
       }));
     }

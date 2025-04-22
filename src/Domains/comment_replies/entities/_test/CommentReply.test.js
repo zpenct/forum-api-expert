@@ -91,7 +91,6 @@ describe('Comment entity', () => {
   
     expect(result['comment-1']).toHaveLength(2);
     expect(result['comment-2']).toHaveLength(1);
-    expect(result['comment-1'][0]).toBeInstanceOf(CommentReply);
   });
 
   it('should group replies correctly into their respective comment', () => {

@@ -74,14 +74,14 @@ describe('GetThreadByIdUseCase', () => {
     expect(comment.id).toEqual('comment-001');
     expect(comment.content).toEqual('comment');
     expect(comment.username).toEqual('user2');
-    expect(comment.created_at).toEqual(dateComment);
+    expect(comment.date).toEqual(dateComment);
     expect(comment.replies).toHaveLength(1);
   
     const reply = comment.replies[0];
     expect(reply.id).toEqual('reply-001');
     expect(reply.content).toEqual('reply comment');
     expect(reply.username).toEqual('user3');
-    expect(reply.created_at).toEqual(dateReply);
+    expect(reply.date).toEqual(dateReply);
     expect(reply.is_delete).toBe(false);
   
     // ✅ Verification of call
