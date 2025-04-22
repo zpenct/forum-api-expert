@@ -1,6 +1,6 @@
 class CommentDetail {
   constructor(payload) {
-    const { id, content, created_at, username, is_delete, replies = [] } = payload;
+    const { id, content, created_at, username, is_delete, replies } = payload;
   
     this._verifyPayload({ id, content, created_at, username, replies });
   

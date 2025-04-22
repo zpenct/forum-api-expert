@@ -224,8 +224,8 @@ describe('CommentRepositoryPostgres', () => {
       expect(comment.id).toEqual('comment-0001');
       expect(comment.content).toEqual('default comment');
       expect(comment.username).toEqual(commentedUsername);
-      expect(comment.replies).toEqual([]);
       expect(comment.created_at).toEqual(expect.any(Date));
+      
     });
     
   });

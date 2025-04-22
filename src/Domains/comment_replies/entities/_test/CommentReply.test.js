@@ -121,6 +121,58 @@ describe('Comment entity', () => {
     expect(result[0].replies).toHaveLength(1);
     expect(result[0].replies[0]).toBeInstanceOf(CommentReply);
   });
+
+  it('should replace reply content with "**balasan telah dihapus**" when is_delete is true', () => {
+    const replies = [
+      {
+        id: 'reply-1',
+        content: 'some content',
+        comment_id: 'comment-1',
+        created_at: new Date(),
+        is_delete: true,
+        username: 'userA',
+      },
+    ];
+  
+    const result = CommentReply.groupReplyByCommentId(replies);
+    expect(result['comment-1'][0].content).toBe('**balasan telah dihapus**');
+    expect(result['comment-1'][0].is_delete).toBe(true);
+  });
+  
+  it('should fallback is_delete to false when it is undefined', () => {
+    const replies = [
+      {
+        id: 'reply-2',
+        content: 'some reply',
+        comment_id: 'comment-2',
+        created_at: new Date(),
+        username: 'userB',
+      },
+    ];
+  
+    const result = CommentReply.groupReplyByCommentId(replies);
+    expect(result['comment-2'][0].is_delete).toBe(false);
+  });
+
+  
+  it('should replace comment content with "**komentar telah dihapus**" when is_delete is true', () => {
+    const comments = [
+      {
+        id: 'comment-1',
+        content: 'some comment',
+        created_at: new Date(),
+        username: 'userA',
+        is_delete: true,
+      },
+    ];
+  
+    const repliesGrouped = {};
+  
+    const result = CommentReply.formatCommentsWithReplies(comments, repliesGrouped);
+    expect(result[0].content).toBe('**komentar telah dihapus**');
+    expect(result[0].is_delete).toBe(true);
+  });
+  
 });
 
 
