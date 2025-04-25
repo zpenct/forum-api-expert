@@ -32,26 +32,36 @@ describe('AddThreadUseCase', () => {
       body: 'body',
       owner: 'user-123',
     };
-
+  
+    // expected value (untuk assert)
     const expectedNewThread = new NewThread({
       id: 'thread-123',
       title: 'Forum Thread',
       owner: 'user-123',
       body: 'body',
     });
-
+  
+    // return object (object baru!)
+    const returnFromMock = new NewThread({
+      id: 'thread-123',
+      title: 'Forum Thread',
+      owner: 'user-123',
+      body: 'body',
+    });
+  
     const mockThreadRepository = new ThreadRepository();
     mockThreadRepository.addThread = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(expectedNewThread));
-
+      .mockResolvedValue(returnFromMock); // beda object dari expected
+  
     const addThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
     });
-
+  
     const actualThread = await addThreadUseCase.execute(useCasePayload);
-
+  
     expect(actualThread).toEqual(expectedNewThread);
     expect(mockThreadRepository.addThread).toBeCalledWith(useCasePayload);
   });
+  
 });

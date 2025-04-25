@@ -6,6 +6,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const CommentRepliesTableTestHelper = require('../../../../tests/CommentRepliesTableTestHelper');
 const NewComment = require('../../../Domains/comments/entities/AddComment');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 describe('ComentReplyRepositoryPostgres', () => {
   const payloadUserJohn = { id: 'user-001', fullname: 'john', username: 'john_user' };
@@ -141,6 +142,28 @@ describe('ComentReplyRepositoryPostgres', () => {
         .findRepliesByCommentIds(findPayload);
 
       expect(resultReplies).toHaveLength(2);
+
+      expect(resultReplies).toStrictEqual([
+        {
+          id: 'reply-0002',
+          content: 'john comment',
+          comment_id: 'comment-0002',
+          owner: 'user-001',
+          is_delete: false,
+          username: 'john_user',
+          created_at: expect.any(Date),
+        },
+        {
+          id: 'reply-0001',
+          content: 'doe comment',
+          comment_id: 'comment-0001',
+          owner: 'user-002',
+          is_delete: false,
+          username: 'doe_user',
+          created_at: expect.any(Date),
+        },
+      ]);
+      
     });
   });
 
@@ -225,5 +248,38 @@ describe('ComentReplyRepositoryPostgres', () => {
       const replies = await CommentRepliesTableTestHelper.findComment(replyPayload.id);
       expect(replies[0].is_delete).toEqual(true);
     });
+  });
+
+  describe('verifyReplyCommentOwner function', () => {
+    it('[POSITIVE] should not throw error when reply owner is valid', async () => {
+      const commentPayload = {
+        id: 'comment-001',
+        threadId: payloadThreadJohn.id,
+        content: 'some comment',
+        owner: payloadUserJohn.id,
+      };
+    
+      const replyPayload = {
+        id: 'reply-001',
+        commentId: commentPayload.id,
+        content: 'some reply',
+        owner: payloadUserDoe.id,
+      };
+    
+      await CommentsTableTestHelper.addComment(commentPayload);
+      await CommentRepliesTableTestHelper.addReply(replyPayload);
+    
+      const commentReplyRepositoryPostgres = new CommentReplyRepositoryPostgres(pool);
+    
+      // ✅ Assert tidak melempar error spesifik
+      await expect(
+        commentReplyRepositoryPostgres.verifyReplyCommentOwner(replyPayload.id, replyPayload.owner)
+      ).resolves.not.toThrow(NotFoundError);
+    
+      await expect(
+        commentReplyRepositoryPostgres.verifyReplyCommentOwner(replyPayload.id, replyPayload.owner)
+      ).resolves.not.toThrow(AuthorizationError);
+    });
+    
   });
 });

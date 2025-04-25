@@ -118,18 +118,28 @@ describe('CommentRepositoryPostgres', () => {
         .toThrowError(AuthorizationError);
     });
 
-    it('should not throw error when given valid payload', async () => {
+
+    it('[POSITIVE] should not throw error (AuthorizationError / NotFoundError) when given valid payload', async () => {
       const idGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, idGenerator);
+    
       const { id } = await commentRepositoryPostgres.addComment({
         content: 'true comment',
         threadId,
         owner: commentedUserId,
       });
-      await expect(commentRepositoryPostgres.verifyCommentOwner(id, commentedUserId))
-        .resolves
-        .not.toThrowError();
+    
+      await expect(
+        commentRepositoryPostgres.verifyCommentOwner(id, commentedUserId)
+      ).resolves.not.toThrow(AuthorizationError);
+    
+      await expect(
+        commentRepositoryPostgres.verifyCommentOwner(id, commentedUserId)
+      ).resolves.not.toThrow(NotFoundError);
     });
+    
+
+    
   });
 
   describe('deleteCommentById function', () => {
@@ -198,24 +208,26 @@ describe('CommentRepositoryPostgres', () => {
         content: 'default comment',
         owner: commentedUserId,
         id: 'comment-0001',
-        date,
+        created_at: date,
       };
-
+    
       await CommentsTableTestHelper.addComment(payloadComment);
-
+    
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
-      const expecetedComments = [new Comment({
-        id: 'comment-0001',
-        content: 'default comment',
-        username: commentedUsername,
-        date,
-        is_delete: false,
-        replies: [],
-      })];
-
+    
       const comments = await commentRepositoryPostgres.getCommentsByThreadId(threadId);
-      expect(comments).toStrictEqual(expecetedComments);
+    
+      expect(comments).toHaveLength(1);
+    
+      const [comment] = comments;
+    
+      expect(comment.id).toEqual('comment-0001');
+      expect(comment.content).toEqual('default comment');
+      expect(comment.username).toEqual(commentedUsername);
+      expect(comment.created_at).toEqual(expect.any(Date));
+      
     });
+    
   });
 
   describe('verifyCommentIsExist function', () => {

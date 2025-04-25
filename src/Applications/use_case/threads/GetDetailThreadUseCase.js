@@ -1,4 +1,4 @@
-const groupReplyByCommentId = require('../../../Domains/comment_replies/entities/GroupReplyComment');
+const CommentReply = require('../../../Domains/comment_replies/entities/CommentReply');
 
 class GetDetailsThreadUseCase {
   constructor({ threadRepository, commentRepository, commentReplyRepository }) {
@@ -18,13 +18,9 @@ class GetDetailsThreadUseCase {
     let replies = await this._commentReplyRepository
       .findRepliesByCommentIds(comments.map((comment) => comment.id));
 
-    replies = groupReplyByCommentId(replies);
+    replies = CommentReply.groupReplyByCommentId(replies);
 
-    comments = comments.map((comment) => ({
-      ...comment
-      ,
-      replies: replies[comment.id] ?? [],
-    }));
+    comments = CommentReply.formatCommentsWithReplies(comments, replies);
 
     return { ...thread, comments };
   }
