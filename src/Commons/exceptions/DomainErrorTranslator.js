@@ -29,6 +29,7 @@ DomainErrorTranslator._directories = {
   'ADD_REPLY_COMMENT_USE_CASE.CANNOT_BE_EMPTY_STRING': new InvariantError('balasan harus berupa string'),
   
   'COMMENT_DETAILS.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('Tidak dapat membuat komentar baru karena properti yang dibutuhkan tidak ada'),
+  'TOGGLE_LIKE_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('Properti yang dibutuhkan yaitu userId dan commentId tidak ada'),
 };
 
 module.exports = DomainErrorTranslator;

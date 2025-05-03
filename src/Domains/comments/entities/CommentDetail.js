@@ -21,8 +21,7 @@ class CommentDetail {
       typeof id !== 'string' ||
       typeof content !== 'string' ||
       (created_at instanceof Date) === false ||
-      typeof username !== 'string' ||
-      !Array.isArray(replies)
+      typeof username !== 'string'
     ) {
       throw new Error('COMMENT_DETAILS.PROPERTY_HAVE_WRONG_DATA_TYPE');
     }
